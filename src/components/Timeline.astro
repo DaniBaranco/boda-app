@@ -1,0 +1,164 @@
+---
+import { wedding } from '../data/wedding';
+---
+
+<section id="plan" class="section" data-section aria-labelledby="plan-title">
+  <div class="section-head reveal">
+    <p class="eyebrow">El gran día</p>
+    <h2 id="plan-title">Plan del día</h2>
+    <p>{wedding.dateLabel}. Te contamos qué pasa y dónde, paso a paso.</p>
+  </div>
+
+  <ol class="timeline">
+    {
+      wedding.timeline.map((item) => (
+        <li class="timeline__item reveal" id={`plan-${item.id}`}>
+          <span class="timeline__dot" aria-hidden="true">
+            {item.icon}
+          </span>
+          <article class="card timeline__card">
+            <p class="chip">
+              <time>{item.time}</time>
+            </p>
+            <h3>{item.title}</h3>
+            <p class="timeline__desc">{item.description}</p>
+            {'place' in item && item.place && (
+              <div class="timeline__place">
+                <p>
+                  <strong>{item.place.name}</strong>
+                  <br />
+                  <span>{item.place.town}</span>
+                </p>
+                <a class="map-link" href={item.place.mapsUrl} target="_blank" rel="noopener">
+                  <span aria-hidden="true">📍</span> Cómo llegar
+                  <span class="visually-hidden"> a {item.place.name} (abre Google Maps)</span>
+                </a>
+              </div>
+            )}
+          </article>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .timeline {
+    --dot: 2.75rem;
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-m);
+    position: relative;
+  }
+
+  /* Línea base y línea de progreso (scroll-driven) */
+  .timeline::before,
+  .timeline::after {
+    content: '';
+    position: absolute;
+    left: calc(var(--dot) / 2 - 1px);
+    top: calc(var(--dot) / 2);
+    bottom: calc(var(--dot) / 2);
+    width: 2px;
+    border-radius: 2px;
+  }
+
+  .timeline::before {
+    background: var(--line);
+  }
+
+  .timeline::after {
+    background: linear-gradient(var(--gold), var(--lavender));
+    transform-origin: top;
+    transform: scaleY(1);
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .timeline {
+        view-timeline: --timeline block;
+      }
+      .timeline::after {
+        animation: grow linear both;
+        animation-timeline: --timeline;
+        animation-range: entry 30% cover 70%;
+      }
+    }
+  }
+
+  @keyframes grow {
+    from {
+      transform: scaleY(0);
+    }
+  }
+
+  .timeline__item {
+    display: grid;
+    grid-template-columns: var(--dot) 1fr;
+    gap: var(--space-s);
+    align-items: start;
+    position: relative;
+    z-index: 1;
+  }
+
+  .timeline__dot {
+    width: var(--dot);
+    height: var(--dot);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--gold);
+    font-size: 1.2rem;
+    box-shadow: 0 0 0 6px var(--cream);
+  }
+
+  .timeline__card {
+    display: grid;
+    gap: var(--space-xs);
+    justify-items: start;
+  }
+
+  .timeline__card h3 {
+    font-size: var(--step-2);
+  }
+
+  .timeline__desc {
+    color: var(--ink-soft);
+  }
+
+  .timeline__place {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-xs) var(--space-m);
+    padding-top: var(--space-s);
+    margin-top: var(--space-xs);
+    border-top: 1px dashed var(--line);
+  }
+
+  .timeline__place span {
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+  }
+
+  @media (min-width: 48rem) {
+    .timeline {
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--space-l);
+    }
+    .timeline::before,
+    .timeline::after {
+      display: none;
+    }
+    .timeline__item {
+      grid-template-columns: 1fr;
+    }
+    .timeline__dot {
+      box-shadow: none;
+    }
+  }
+</style>

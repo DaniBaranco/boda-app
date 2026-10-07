@@ -1,0 +1,234 @@
+---
+const items = [
+  { href: '#inicio', label: 'Inicio', icon: 'home' },
+  { href: '#plan', label: 'Plan', icon: 'clock' },
+  { href: '#bus', label: 'Bus', icon: 'bus' },
+  { href: '#dudas', label: 'Dudas', icon: 'help' },
+  { href: '#confirmar', label: 'Confirmar', icon: 'check' },
+] as const;
+
+const paths: Record<(typeof items)[number]['icon'], string> = {
+  home: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
+  clock: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-13v4l3 2',
+  bus: 'M6 17h12M5 6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v11H5zM5 11h14M8 20v-3m8 3v-3',
+  help: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm-2.5-11.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01',
+  check: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm-4-9 3 3 5-6',
+};
+---
+
+<nav class="nav" aria-label="Secciones">
+  <a class="nav__brand" href="#inicio" aria-label="Almu y Dani, volver al inicio">A<span>&amp;</span>D</a>
+  <ul class="nav__list">
+    {
+      items.map((it) => (
+        <li>
+          <a class={`nav__link${it.icon === 'check' ? ' nav__link--cta' : ''}`} href={it.href} data-nav>
+            <svg
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d={paths[it.icon]} />
+            </svg>
+            <span>{it.label}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 50;
+    padding-bottom: var(--safe-bottom);
+    background: color-mix(in oklab, var(--surface) 88%, transparent);
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    border-top: 1px solid var(--line);
+  }
+
+  .nav__brand {
+    display: none;
+  }
+
+  .nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0 env(safe-area-inset-right, 0) 0 env(safe-area-inset-left, 0);
+    height: var(--nav-h);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .nav__link {
+    height: 100%;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 0.15rem;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.75rem;
+    font-weight: 700;
+    position: relative;
+    transition: color 0.2s;
+  }
+
+  .nav__link svg {
+    transition: transform 0.25s var(--ease-out);
+  }
+
+  .nav__link::before {
+    content: '';
+    position: absolute;
+    top: 0.45rem;
+    width: 3.5rem;
+    height: 2rem;
+    border-radius: 999px;
+    background: var(--gold-tint);
+    scale: 0.5;
+    opacity: 0;
+    transition:
+      scale 0.3s var(--ease-out),
+      opacity 0.2s;
+    z-index: -1;
+  }
+
+  .nav__link[aria-current='location'] {
+    color: var(--gold-strong);
+  }
+
+  .nav__link[aria-current='location']::before {
+    scale: 1;
+    opacity: 1;
+  }
+
+  .nav__link:active svg {
+    transform: scale(0.9);
+  }
+
+  .nav__link--cta {
+    color: var(--gold);
+  }
+
+  .nav__link:focus-visible {
+    outline-offset: -4px;
+  }
+
+  @media (min-width: 60rem) {
+    .nav {
+      position: sticky;
+      inset: 0 0 auto 0;
+      padding: 0 max(var(--space-m), (100% - 68rem) / 2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--nav-h);
+      border-top: 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav__brand {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      font: 600 1.75rem / 1 var(--font-display);
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .nav__brand span {
+      color: var(--gold);
+      font-style: italic;
+      margin-inline: 0.05em;
+    }
+
+    .nav__list {
+      height: auto;
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .nav__link {
+      display: inline-flex;
+      gap: 0.4rem;
+      min-height: 44px;
+      padding: 0 1rem;
+      border-radius: 999px;
+      font-size: var(--step--1);
+    }
+
+    .nav__link svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .nav__link::before {
+      inset: 0;
+      top: 0;
+      width: auto;
+      height: auto;
+    }
+
+    .nav__link--cta {
+      background: var(--gold);
+      color: var(--on-gold);
+      margin-left: 0.5rem;
+    }
+
+    .nav__link--cta[aria-current='location'] {
+      color: var(--on-gold);
+    }
+
+    .nav__link--cta::before {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav]')];
+  const byId = new Map(links.map((l) => [l.hash.slice(1), l]));
+  const sections = [...document.querySelectorAll<HTMLElement>('[data-section]')];
+
+  const setActive = (id: string) => {
+    for (const [key, link] of byId) {
+      if (key === id) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    }
+  };
+
+  // La sección activa es la última cuyo inicio ha cruzado el 40% superior de la ventana.
+  const update = () => {
+    const line = window.innerHeight * 0.4;
+    let active = sections[0]?.id ?? 'inicio';
+    for (const s of sections) {
+      if (s.getBoundingClientRect().top <= line) active = s.id;
+    }
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) {
+      active = sections.at(-1)?.id ?? active;
+    }
+    setActive(active);
+  };
+
+  let raf = 0;
+  addEventListener(
+    'scroll',
+    () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    },
+    { passive: true },
+  );
+  addEventListener('resize', update);
+  update();
+</script>

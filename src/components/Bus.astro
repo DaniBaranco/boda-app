@@ -1,0 +1,186 @@
+---
+import { wedding } from '../data/wedding';
+import { isValidFormUrl } from '../lib/links';
+
+const { bus } = wedding;
+const busForm = isValidFormUrl(wedding.busFormUrl) ? wedding.busFormUrl : null;
+---
+
+<section id="bus" class="section" data-section aria-labelledby="bus-title">
+  <div class="section-head reveal">
+    <p class="eyebrow">Sin preocuparte por conducir</p>
+    <h2 id="bus-title">Autobús</h2>
+    <p>Ponemos autobús de ida y vuelta. Resérvalo al confirmar asistencia.</p>
+  </div>
+
+  <div class="bus">
+    <article class="card bus__card reveal">
+      <header class="bus__head">
+        <span class="bus__icon" aria-hidden="true">🚌</span>
+        <div>
+          <p class="eyebrow">Ida</p>
+          <h3><time>{bus.outbound.time}</time></h3>
+        </div>
+      </header>
+      <p>
+        <strong>{bus.outbound.from}</strong><br />
+        <span class="muted">{bus.outbound.address}</span>
+      </p>
+      <ol class="route" aria-label="Recorrido de ida">
+        {bus.outbound.route.map((stop) => <li>{stop}</li>)}
+      </ol>
+      <a class="map-link" href={bus.outbound.mapsUrl} target="_blank" rel="noopener">
+        <span aria-hidden="true">📍</span> Ver punto de recogida
+        <span class="visually-hidden"> (abre Google Maps)</span>
+      </a>
+    </article>
+
+    <article class="card bus__card reveal">
+      <header class="bus__head">
+        <span class="bus__icon" aria-hidden="true">🌙</span>
+        <div>
+          <p class="eyebrow">Vuelta</p>
+          <h3>Dos turnos</h3>
+        </div>
+      </header>
+      <ul class="slots" aria-label="Horarios de vuelta">
+        {
+          bus.returns.map((t, i) => (
+            <li class="slot">
+              <time>{t}</time>
+              <span>{i === 0 ? 'Para los prudentes' : 'Para cerrar la fiesta'}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="muted">{bus.returnTo}</p>
+    </article>
+  </div>
+
+  {
+    busForm && (
+      <a class="btn btn--primary bus__cta" href={busForm} target="_blank" rel="noopener">
+        Reservar plaza en el bus
+      </a>
+    )
+  }
+</section>
+
+<style>
+  .bus {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  @media (min-width: 48rem) {
+    .bus {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .bus__card {
+    display: grid;
+    gap: var(--space-s);
+    align-content: start;
+  }
+
+  .bus__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+  }
+
+  .bus__head h3 {
+    font-size: var(--step-3);
+  }
+
+  .bus__icon {
+    width: 3.25rem;
+    height: 3.25rem;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-s);
+    background: var(--gold-tint);
+    font-size: 1.5rem;
+  }
+
+  .muted {
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+  }
+
+  .route {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    counter-reset: stop;
+  }
+
+  .route li {
+    counter-increment: stop;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: var(--step--1);
+    font-weight: 700;
+  }
+
+  .route li::before {
+    content: counter(stop);
+    width: 1.5rem;
+    height: 1.5rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--on-gold);
+    font-size: 0.75rem;
+  }
+
+  .route li:not(:last-child)::after {
+    content: '→';
+    color: var(--gold);
+    margin-inline: 0.15rem;
+  }
+
+  .slots {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xs);
+  }
+
+  .slot {
+    display: grid;
+    gap: 0.15rem;
+    padding: var(--space-s);
+    border-radius: var(--radius-s);
+    background: var(--lavender-tint);
+    text-align: center;
+  }
+
+  .slot time {
+    font: 600 var(--step-2) / 1 var(--font-display);
+    color: var(--lavender);
+  }
+
+  .slot span {
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+
+  .bus__cta {
+    margin-top: var(--space-m);
+    width: 100%;
+  }
+
+  @media (min-width: 40rem) {
+    .bus__cta {
+      width: auto;
+    }
+  }
+</style>

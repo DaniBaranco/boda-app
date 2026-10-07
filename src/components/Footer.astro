@@ -1,0 +1,39 @@
+---
+import { wedding } from '../data/wedding';
+---
+
+<footer class="footer">
+  <p class="footer__mono" aria-hidden="true">A<span>&amp;</span>D</p>
+  <p class="footer__date">{wedding.shortDate}</p>
+  <p>Hecho con cariño para nuestros invitados.</p>
+</footer>
+
+<style>
+  .footer {
+    display: grid;
+    justify-items: center;
+    gap: 0.25rem;
+    padding: var(--space-xl) var(--space-m) var(--space-l);
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: var(--step--1);
+    border-top: 1px solid var(--line);
+    margin-top: var(--space-xl);
+  }
+
+  .footer__mono {
+    font: 600 var(--step-3) / 1 var(--font-display);
+    color: var(--ink);
+  }
+
+  .footer__mono span {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  .footer__date {
+    letter-spacing: 0.2em;
+    font-weight: 700;
+    color: var(--gold);
+  }
+</style>

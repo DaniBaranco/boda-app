@@ -1,0 +1,122 @@
+---
+import { wedding } from '../data/wedding';
+---
+
+<section id="dudas" class="section" data-section aria-labelledby="dudas-title">
+  <div class="section-head reveal">
+    <p class="eyebrow">Preguntas frecuentes</p>
+    <h2 id="dudas-title">Dudas</h2>
+    <p>Lo que más nos preguntáis. Si no está aquí, escríbenos.</p>
+  </div>
+
+  <div class="faq">
+    {
+      wedding.faqs.map((f, i) => (
+        <details class="faq__item reveal" name="faq" open={i === 0}>
+          <summary>
+            <span>{f.question}</span>
+            <span class="faq__icon" aria-hidden="true" />
+          </summary>
+          <div class="faq__answer">
+            <p>{f.answer}</p>
+          </div>
+        </details>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .faq {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .faq__item {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .faq__item[open] {
+    border-color: var(--gold);
+  }
+
+  summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    min-height: 3.5rem;
+    padding: var(--space-s) var(--space-m);
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary:focus-visible {
+    outline-offset: -3px;
+  }
+
+  .faq__icon {
+    flex: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--gold-tint);
+    position: relative;
+    transition: transform 0.3s var(--ease-out);
+  }
+
+  .faq__icon::before,
+  .faq__icon::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 0.8rem;
+    height: 2px;
+    background: var(--gold-strong);
+    translate: -50% -50%;
+  }
+
+  .faq__icon::after {
+    rotate: 90deg;
+    transition: rotate 0.3s var(--ease-out);
+  }
+
+  [open] .faq__icon {
+    transform: rotate(180deg);
+  }
+
+  [open] .faq__icon::after {
+    rotate: 0deg;
+  }
+
+  .faq__answer {
+    padding: 0 var(--space-m) var(--space-m);
+    color: var(--ink-soft);
+  }
+
+  /* Apertura animada en navegadores con interpolate-size */
+  @supports (interpolate-size: allow-keywords) {
+    .faq__item {
+      interpolate-size: allow-keywords;
+    }
+    .faq__item::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition:
+        block-size 0.35s var(--ease-out),
+        content-visibility 0.35s allow-discrete;
+    }
+    .faq__item[open]::details-content {
+      block-size: auto;
+    }
+  }
+</style>

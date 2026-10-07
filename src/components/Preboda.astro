@@ -1,0 +1,101 @@
+---
+import { Picture } from 'astro:assets';
+import pub from '../assets/img/Irish_Rover_Bernabeu.webp';
+import { wedding } from '../data/wedding';
+
+const { preboda } = wedding;
+---
+
+<section id="preboda" class="section" aria-labelledby="preboda-title">
+  <article class="preboda card reveal">
+    <Picture
+      src={pub}
+      formats={['avif', 'webp']}
+    fallbackFormat="jpg"
+      widths={[480, 800]}
+      sizes="(min-width: 48rem) 45vw, 100vw"
+      alt="Fachada del pub The Irish Rover en Madrid"
+      loading="lazy"
+      class="preboda__img"
+    />
+    <div class="preboda__body">
+      <p class="eyebrow">La noche antes</p>
+      <h2 id="preboda-title">Preboda</h2>
+      <p>{preboda.description}</p>
+      <dl class="preboda__facts">
+        <div>
+          <dt>Cuándo</dt>
+          <dd>{preboda.dateLabel}<br />{preboda.time}</dd>
+        </div>
+        <div>
+          <dt>Dónde</dt>
+          <dd>{preboda.place.name}<br /><span class="muted">{preboda.place.town}</span></dd>
+        </div>
+      </dl>
+      <a class="map-link" href={preboda.place.mapsUrl} target="_blank" rel="noopener">
+        <span aria-hidden="true">📍</span> Cómo llegar
+        <span class="visually-hidden"> a {preboda.place.name} (abre Google Maps)</span>
+      </a>
+    </div>
+  </article>
+</section>
+
+<style>
+  .preboda {
+    padding: 0;
+    overflow: hidden;
+    display: grid;
+  }
+
+  @media (min-width: 48rem) {
+    .preboda {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .preboda :global(.preboda__img) {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+  }
+
+  .preboda__body {
+    display: grid;
+    gap: var(--space-s);
+    align-content: center;
+    padding: var(--space-l) var(--space-m);
+  }
+
+  .preboda__body h2 {
+    font-size: var(--step-3);
+  }
+
+  .preboda__facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-s);
+    padding: var(--space-s);
+    border-radius: var(--radius-s);
+    background: var(--gold-tint);
+  }
+
+  dt {
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold-strong);
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .muted {
+    color: var(--ink-soft);
+    font-weight: 400;
+    font-size: var(--step--1);
+  }
+</style>

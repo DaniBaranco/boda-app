@@ -1,0 +1,30 @@
+---
+import Layout from '../layouts/Layout.astro';
+import BottomNav from '../components/BottomNav.astro';
+import Hero from '../components/Hero.astro';
+import Timeline from '../components/Timeline.astro';
+import Gallery from '../components/Gallery.astro';
+import Bus from '../components/Bus.astro';
+import Preboda from '../components/Preboda.astro';
+import Faq from '../components/Faq.astro';
+import Rsvp from '../components/Rsvp.astro';
+import Footer from '../components/Footer.astro';
+import { wedding } from '../data/wedding';
+---
+
+<Layout
+  title={`${wedding.couple} · ${wedding.shortDate}`}
+  description={`¡Nos casamos! ${wedding.dateLabel} en Torrelaguna (Madrid). Plan del día, autobús, preboda y confirmación de asistencia.`}
+>
+  <BottomNav />
+  <main id="contenido" tabindex="-1">
+    <Hero />
+    <Timeline />
+    <Gallery />
+    <Bus />
+    <Preboda />
+    <Faq />
+    <Rsvp />
+  </main>
+  <Footer />
+</Layout>

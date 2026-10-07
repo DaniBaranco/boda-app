@@ -1,0 +1,401 @@
+---
+import { Picture } from 'astro:assets';
+import hero from '../assets/img/entrada_finca.jpeg';
+import { wedding } from '../data/wedding';
+import { getCountdown } from '../lib/countdown';
+import { googleCalendarUrl } from '../lib/links';
+
+const cd = getCountdown(wedding.startsAt);
+const units = [
+  { key: 'days', label: 'días', value: cd.days },
+  { key: 'hours', label: 'horas', value: cd.hours },
+  { key: 'minutes', label: 'min', value: cd.minutes },
+  { key: 'seconds', label: 'seg', value: cd.seconds },
+] as const;
+
+const gcal = googleCalendarUrl({
+  title: `Boda de ${wedding.couple}`,
+  start: wedding.startsAt,
+  end: wedding.endsAt,
+  details: `Toda la info: ${Astro.site}`,
+  location: 'Iglesia de Santa María Magdalena, Torrelaguna, Madrid',
+});
+---
+
+<header id="inicio" class="hero" data-section>
+  <Picture
+    src={hero}
+    formats={['avif', 'webp']}
+    fallbackFormat="jpg"
+    widths={[480, 800, 1200, 1800]}
+    sizes="100vw"
+    alt=""
+    class="hero__bg"
+    loading="eager"
+    fetchpriority="high"
+  />
+  <div class="hero__inner">
+    <p class="eyebrow hero__eyebrow">¡Nos casamos!</p>
+    <h1 class="hero__names">
+      <span>{wedding.names[0]}</span>
+      <button class="hero__amp" type="button" data-confetti aria-label="Lanzar confeti">&amp;</button>
+      <span>{wedding.names[1]}</span>
+    </h1>
+    <p class="hero__date">
+      <time datetime={wedding.startsAt}>{wedding.dateLabel}</time><span class="hero__sep" aria-hidden="true"> · </span><span class="visually-hidden">, </span><span class="hero__place">Torrelaguna, Madrid</span>
+    </p>
+
+    <div class="countdown" role="timer" aria-label="Cuenta atrás hasta la boda" data-countdown={wedding.startsAt}>
+      {
+        units.map((u) => (
+          <div class="countdown__unit">
+            <span class="countdown__value" data-unit={u.key}>
+              {String(u.value).padStart(2, '0')}
+            </span>
+            <span class="countdown__label">{u.label}</span>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="hero__actions">
+      <a class="btn btn--primary" href="#confirmar">Confirmar asistencia</a>
+      <button class="btn" type="button" popovertarget="calendar-menu">
+        <span aria-hidden="true">📅</span> Al calendario
+      </button>
+      <button class="btn btn--ghost hero__share" type="button" data-share>
+        <span aria-hidden="true">↗</span> Compartir
+      </button>
+    </div>
+    <p class="hero__toast" role="status" aria-live="polite" data-share-status></p>
+  </div>
+
+  <div id="calendar-menu" class="sheet" popover>
+    <p class="sheet__title">Guardar la fecha</p>
+    <a class="btn" href={gcal} target="_blank" rel="noopener">Google Calendar</a>
+    <a class="btn" href="/boda.ics" download>Apple / Outlook (.ics)</a>
+    <button class="btn btn--ghost" type="button" popovertarget="calendar-menu" popovertargetaction="hide">
+      Cerrar
+    </button>
+  </div>
+
+  <a class="hero__scroll" href="#plan" aria-label="Ver el plan del día">
+    <span aria-hidden="true">↓</span>
+  </a>
+</header>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    min-height: calc(100svh - var(--nav-h) - var(--safe-bottom));
+    display: grid;
+    place-items: end center;
+    padding: calc(env(safe-area-inset-top, 0px) + var(--space-xl)) var(--space-m) var(--space-l);
+    color: #fffdf8;
+    overflow: clip;
+  }
+
+  @media (min-width: 60rem) {
+    .hero {
+      min-height: calc(100svh - var(--nav-h));
+      place-items: center;
+    }
+  }
+
+  .hero :global(picture) {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+  }
+
+  .hero :global(img.hero__bg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 40%;
+    animation: hero-zoom 18s ease-out both;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, rgb(22 18 14 / 0.25) 0%, rgb(22 18 14 / 0.15) 35%, rgb(22 18 14 / 0.85) 100%),
+      radial-gradient(120% 60% at 50% 100%, rgb(141 98 255 / 0.25), transparent 70%);
+  }
+
+  @keyframes hero-zoom {
+    from {
+      transform: scale(1.12);
+    }
+  }
+
+  .hero__inner {
+    width: min(40rem, 100%);
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: var(--space-m);
+    animation: rise 0.9s var(--ease-out) both 0.15s;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(1.5rem);
+    }
+  }
+
+  .hero__eyebrow {
+    color: #f0c993;
+  }
+
+  .hero__names {
+    font-size: var(--step-4);
+    font-weight: 500;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    column-gap: 0.25em;
+    text-shadow: 0 2px 30px rgb(0 0 0 / 0.35);
+  }
+
+  .hero__amp {
+    font: italic 500 1em/1 var(--font-display);
+    color: #f0c993;
+    background: none;
+    border: 0;
+    padding: 0 0.05em;
+    cursor: pointer;
+    min-width: 44px;
+    min-height: 44px;
+    transition: transform 0.3s var(--ease-out);
+  }
+
+  .hero__amp:hover,
+  .hero__amp:active {
+    transform: rotate(-8deg) scale(1.08);
+  }
+
+  .hero__date {
+    font-size: var(--step-1);
+    font-weight: 600;
+  }
+  @media (width < 40rem) {
+    .hero__sep {
+      display: none;
+    }
+    .hero__place {
+      display: block;
+    }
+  }
+
+  .countdown {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-xs);
+    width: min(26rem, 100%);
+  }
+
+  .countdown__unit {
+    display: grid;
+    padding: 0.6rem 0.25rem;
+    border-radius: var(--radius-s);
+    background: rgb(255 253 248 / 0.12);
+    border: 1px solid rgb(255 253 248 / 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .countdown__value {
+    font: 600 var(--step-2) / 1 var(--font-display);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .countdown__label {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.9;
+  }
+
+  .hero__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xs);
+    width: min(26rem, 100%);
+  }
+
+  .hero__actions .btn--primary {
+    grid-column: 1 / -1;
+  }
+
+  .hero__actions .btn:not(.btn--primary) {
+    --btn-bg: rgb(255 253 248 / 0.14);
+    --btn-fg: #fffdf8;
+    --btn-border: rgb(255 253 248 / 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  @media (min-width: 40rem) {
+    .hero__actions {
+      width: auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+
+  .hero__toast {
+    min-height: 1.5em;
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+
+  .hero__scroll {
+    position: absolute;
+    bottom: var(--space-xs);
+    left: 50%;
+    translate: -50% 0;
+    display: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: #fffdf8;
+    text-decoration: none;
+    font-size: 1.25rem;
+    animation: bob 2s ease-in-out infinite;
+  }
+
+  @media (min-width: 60rem) {
+    .hero__scroll {
+      display: grid;
+    }
+  }
+
+  @keyframes bob {
+    50% {
+      transform: translateY(6px);
+    }
+  }
+
+  .sheet {
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: var(--space-m);
+    padding-bottom: calc(var(--space-m) + var(--safe-bottom));
+    display: none;
+    gap: var(--space-xs);
+    box-shadow: 0 -10px 40px -10px rgb(0 0 0 / 0.35);
+    position: fixed;
+    inset: auto 0 0 0;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: var(--radius-l) var(--radius-l) 0 0;
+    transition:
+      translate 0.3s var(--ease-out),
+      display 0.3s allow-discrete,
+      overlay 0.3s allow-discrete;
+    translate: 0 100%;
+  }
+
+  .sheet:popover-open {
+    display: grid;
+    translate: 0 0;
+  }
+
+  @starting-style {
+    .sheet:popover-open {
+      translate: 0 100%;
+    }
+  }
+
+  .sheet::backdrop {
+    background: rgb(22 18 14 / 0.45);
+  }
+
+  @media (min-width: 40rem) {
+    .sheet {
+      inset: 0;
+      margin: auto;
+      width: min(24rem, 100% - 2rem);
+      height: fit-content;
+      border-radius: var(--radius-l);
+      translate: 0 1rem;
+      padding-bottom: var(--space-m);
+    }
+
+    @starting-style {
+      .sheet:popover-open {
+        translate: 0 1rem;
+      }
+    }
+  }
+
+  .sheet__title {
+    font: 600 var(--step-2) / 1.1 var(--font-display);
+    margin-bottom: var(--space-xs);
+  }
+</style>
+
+<script>
+  import { getCountdown } from '../lib/countdown';
+  import { launchConfetti } from '../lib/confetti';
+
+  const root = document.querySelector<HTMLElement>('[data-countdown]');
+  if (root) {
+    const target = root.dataset.countdown!;
+    const cells = {
+      days: root.querySelector('[data-unit="days"]'),
+      hours: root.querySelector('[data-unit="hours"]'),
+      minutes: root.querySelector('[data-unit="minutes"]'),
+      seconds: root.querySelector('[data-unit="seconds"]'),
+    };
+    const tick = () => {
+      const cd = getCountdown(target);
+      for (const [key, el] of Object.entries(cells)) {
+        if (el) el.textContent = String(cd[key as keyof typeof cells]).padStart(2, '0');
+      }
+      if (cd.done) {
+        root.setAttribute('aria-label', '¡Hoy es el gran día!');
+        return;
+      }
+      setTimeout(tick, 1000 - (Date.now() % 1000));
+    };
+    tick();
+  }
+
+  for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-confetti]')) {
+    btn.addEventListener('click', () => {
+      const r = btn.getBoundingClientRect();
+      launchConfetti({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+    });
+  }
+
+  const status = document.querySelector<HTMLElement>('[data-share-status]');
+  document.querySelector('[data-share]')?.addEventListener('click', async () => {
+    const data = { title: document.title, text: '¡Almu & Dani se casan! Toda la info aquí:', url: location.href };
+    try {
+      if (navigator.share) {
+        await navigator.share(data);
+        return;
+      }
+      await navigator.clipboard.writeText(data.url);
+      if (status) status.textContent = 'Enlace copiado ✓';
+    } catch (err) {
+      if ((err as DOMException).name !== 'AbortError' && status) {
+        status.textContent = 'No se pudo compartir. Copia la URL del navegador.';
+      }
+    }
+    setTimeout(() => status && (status.textContent = ''), 3000);
+  });
+</script>

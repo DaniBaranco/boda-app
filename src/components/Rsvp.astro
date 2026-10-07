@@ -1,0 +1,127 @@
+---
+import { wedding } from '../data/wedding';
+import { isValidFormUrl, telHref } from '../lib/links';
+
+const formReady = isValidFormUrl(wedding.formUrl);
+---
+
+<section id="confirmar" class="section" data-section aria-labelledby="confirmar-title">
+  <div class="rsvp card reveal">
+    <p class="eyebrow">Nos ayudas muchísimo</p>
+    <h2 id="confirmar-title">¿Vienes?</h2>
+    <p class="rsvp__lead">
+      Confirma tu asistencia antes del <strong>{wedding.rsvpDeadlineLabel}</strong>. Son 2 minutos: asistencia,
+      menú, alergias y autobús.
+    </p>
+    <p class="rsvp__left" data-deadline={wedding.rsvpDeadline} hidden></p>
+
+    {
+      formReady ? (
+        <a class="btn btn--primary rsvp__cta" href={wedding.formUrl} target="_blank" rel="noopener" data-rsvp>
+          Confirmar asistencia
+          <span class="visually-hidden"> (abre el formulario en una pestaña nueva)</span>
+        </a>
+      ) : (
+        <>
+          <a class="btn btn--primary rsvp__cta" role="link" aria-disabled="true" aria-describedby="rsvp-soon" data-rsvp>
+            Confirmar asistencia
+          </a>
+          <p id="rsvp-soon" class="rsvp__soon">
+            El formulario estará disponible muy pronto. Mientras, puedes escribirnos.
+          </p>
+        </>
+      )
+    }
+
+    <div class="rsvp__contacts">
+      <p>¿Dudas? Llámanos o escríbenos:</p>
+      <ul>
+        {
+          wedding.contacts.map((c) => (
+            <li>
+              <a class="btn" href={telHref(c.phone)}>
+                <span aria-hidden="true">📞</span> {c.name}
+                <span class="visually-hidden">, {c.phone}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .rsvp {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: var(--space-s);
+    padding: var(--space-xl) var(--space-m);
+    background:
+      radial-gradient(80% 60% at 50% 0%, var(--gold-tint), transparent 70%),
+      radial-gradient(60% 50% at 100% 100%, var(--lavender-tint), transparent 70%), var(--surface);
+  }
+
+  .rsvp h2 {
+    font-size: var(--step-4);
+  }
+
+  .rsvp__lead {
+    max-width: 32rem;
+    color: var(--ink-soft);
+  }
+
+  .rsvp__left {
+    font-weight: 700;
+    color: var(--lavender);
+  }
+
+  .rsvp__cta {
+    width: min(22rem, 100%);
+    min-height: 3.5rem;
+    font-size: var(--step-1);
+    margin-top: var(--space-xs);
+  }
+
+  .rsvp__soon {
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+    max-width: 22rem;
+  }
+
+  .rsvp__contacts {
+    margin-top: var(--space-m);
+    padding-top: var(--space-m);
+    border-top: 1px dashed var(--line);
+    width: min(22rem, 100%);
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .rsvp__contacts ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xs);
+  }
+
+  .rsvp__contacts .btn {
+    width: 100%;
+  }
+</style>
+
+<script>
+  const el = document.querySelector<HTMLElement>('[data-deadline]');
+  if (el) {
+    const deadline = new Date(`${el.dataset.deadline}T23:59:59+02:00`).getTime();
+    const days = Math.ceil((deadline - Date.now()) / 86_400_000);
+    if (days > 0) {
+      el.textContent = days === 1 ? '¡Queda 1 día para confirmar!' : `Quedan ${days} días para confirmar`;
+      el.hidden = false;
+    }
+  }
+
+  document.querySelector('[data-rsvp][aria-disabled="true"]')?.addEventListener('click', (e) => e.preventDefault());
+</script>
